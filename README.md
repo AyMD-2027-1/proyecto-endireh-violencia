@@ -11,6 +11,8 @@ Curso de Almacenes y Minería de Datos — Facultad de Ciencias, UNAM.
 
 ## Estructura del Proyecto
 
+<!-- ToDO: Actualizar conforme se agreguen-->
+
 ```sh
 proyecto-endireh-violencia/
 │
@@ -58,7 +60,14 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+## Cómo ejecutar un archivo
+
+```sh
+python -m src.eda.load_data
+```
+
 ## Cómo ejecutar el pipeline
+
 
 ## Equipo
 
