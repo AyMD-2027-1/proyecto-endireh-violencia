@@ -41,6 +41,7 @@ proyecto-endireh-violencia/
 
 - Polars
 - Pyarrow
+- ipykernel
 
 
 ## Cómo instalar el entorno
@@ -65,7 +66,7 @@ pip install -r requirements.txt
 ## Cómo ejecutar un archivo
 
 ```sh
-python -m src.eda.load_data
+python -m src.eda.load_raw_data
 ```
 
 ## Cómo ejecutar el pipeline
