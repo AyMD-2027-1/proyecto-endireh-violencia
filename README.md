@@ -60,6 +60,8 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+<!-- ToDO: Agregar donde descargar datos crudos -->
+
 ## Cómo ejecutar un archivo
 
 ```sh
