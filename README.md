@@ -4,6 +4,8 @@ Curso de Almacenes y Minería de Datos — Facultad de Ciencias, UNAM.
 
 ## Objetivo del Proyecto
 
+<!-- ToDO -->
+
 ## Fuente de Datos
 
 - **Encuesta Nacional sobre la Dinámica de las Relaciones en los Hogares
@@ -27,6 +29,7 @@ proyecto-endireh-violencia/
 │
 ├── src/
 │   ├── cleaning/           # Scripts de limpieza y preprocesamiento
+│   ├── eda/                # Scripts de exploración
 │   ├── visualization/      # Scripts de graficas y EDA
 │   └── models/             # Scripts de entrenamiento y evaluacion de modelos
 │
@@ -42,6 +45,8 @@ proyecto-endireh-violencia/
 - Polars
 - Pyarrow
 - ipykernel
+- matplotlib
+- seaborn
 
 
 ## Cómo instalar el entorno
@@ -70,6 +75,9 @@ python -m src.eda.load_raw_data
 ```
 
 ## Cómo ejecutar el pipeline
+
+
+<!-- ToDO -->
 
 
 ## Equipo
