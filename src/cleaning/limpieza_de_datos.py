@@ -1,6 +1,4 @@
-# Limpieza de Datos
-
-# 1. carga
+"""Limpieza de datos ENDIREH 2021."""
 
 import polars as pl
 import matplotlib.pyplot as plt
@@ -11,14 +9,12 @@ df = pl.read_csv(RUTA_DATA_RAW / "endireh_2021.csv")
 print(df.shape)
 df.head()
 
-# 2. Variables no consideradas todavía
-
+# Variables no consideradas todavía en el EDA previo, se revisan aquí.
 schema = df.schema
 print("Todas las columnas del dataset:")
 for col, tipo in schema.items():
     print(f" {col}: {tipo}")
 
-# Columnas que **no se han tocado** en `eda.ipynb` ni en `medidas_localizacion.ipynb`:
 columnas_no_revisadas = [
     "cve_entidad",
     "cve_municipio",
@@ -50,7 +46,8 @@ for c in columnas_no_revisadas:
     print(f"\n{c} — valores únicos:")
     print(df[c].value_counts().sort("count", descending=True))
 
-# 3. Por qué existen los nulos: relaciones entre variables
+# Por qué existen los nulos: relaciones entre variables.
+# edad_primer_union depende de estado_civil_desc (P3_8/P13_14).
 total_nulos_edad = df.filter(pl.col("edad_primer_union").is_null()).height
 print(f"Total de nulos en edad_primer_union: {total_nulos_edad}")
 
@@ -64,7 +61,6 @@ nulos_edad_por_estado_civil = (
     )
 )
 print(nulos_edad_por_estado_civil)
-
 
 total_nulos_hijos = df.filter(pl.col("num_hijos").is_null()).height
 print(f"Total de nulos en num_hijos: {total_nulos_hijos}")
@@ -80,7 +76,7 @@ nulos_hijos_por_estado_civil = (
 )
 print(nulos_hijos_por_estado_civil)
 
-
+# Consulta de contexto: nulos de ingreso_pareja vs otras variables económicas.
 comparacion_economica = (
     df.with_columns(pl.col("ingreso_pareja").is_null().alias("sin_dato_ingreso_pareja"))
     .group_by("sin_dato_ingreso_pareja")
@@ -96,9 +92,7 @@ comparacion_economica = (
 )
 print(comparacion_economica)
 
-
-# 4. Duplicados
-
+# Duplicados: se detectan y eliminan considerando todas las columnas.
 n_filas_antes = df.height
 n_duplicados = df.is_duplicated().sum()
 print(f"Filas totales: {n_filas_antes}")
@@ -109,9 +103,7 @@ n_filas_despues = df.height
 print(f"Filas después de eliminar duplicados: {n_filas_despues}")
 print(f"Filas eliminadas: {n_filas_antes - n_filas_despues}")
 
-
-# 5. Códigos especiales -> nulos reales
-
+# Códigos especiales a nulos reales (no sabe/no especificado, no top-coding).
 count_999997 = df.filter(pl.col("ingreso_pareja") == 999997).height
 print(
     f"Registros con ingreso_pareja = 999997 (top-coded, NO es no-respuesta): {count_999997}"
@@ -130,30 +122,20 @@ df = df.with_columns(
     ]
 )
 
-# Verificaciónq ue ya no deben aparecer esos códigos
 print(df.filter(pl.col("edad_primer_union").is_in([98, 99])).height)  # debe ser 0
 print(df.filter(pl.col("ingreso_pareja").is_in([999998, 999999])).height)  # debe ser 0
 
-# 6. Imputación
-
+# Imputación.
 total_filas = df.height
 for col in ["edad_primer_union", "num_hijos", "ingreso_pareja"]:
     n_nulos = df[col].null_count()
     print(f"{col}: {n_nulos} nulos ({n_nulos / total_filas * 100:.1f}%)")
 
-# Nulo estructural en mujeres que nunca han tenido pareja (confirmado por P3_8/P13_14). Imputar con la mediana/media sería conceptualmente incorrecto: asignaría una "edad de primera unión" a mujeres que nunca se han unido. En vez de imputar con un número, se agrega una variable indicadora.
-
+# edad_primer_union: nulo estructural, no se imputa; se agrega indicador.
 df = df.with_columns(pl.col("edad_primer_union").is_null().alias("nunca_tuvo_union"))
-
-# Para los cálculos de localización/variabilidad,
-# se sigue trabajando solo con las mujeres que sí tienen el dato,
-# tal como ya hace limpiar_cuantitativa() en medidas_localizacion.ipynb
-# No se imputa esta variable con un valor numérico
-# por lo explicado arriba
 print(df["nunca_tuvo_union"].value_counts())
 
-# No hay un mapeo 1 a 1 confirmado con una única pregunta oficial, pero el faltante es más que sea no-respuesta real que "no aplica" estructural. Se imputa con la **mediana** por `estado_civil_desc` (más robusta que la media).
-
+# num_hijos: se imputa con la mediana por estado_civil_desc.
 mediana_num_hijos = df["num_hijos"].median()
 print(f"Mediana global de num_hijos: {mediana_num_hijos}")
 
@@ -164,8 +146,8 @@ df = df.with_columns(
 )
 print(f"Nulos restantes en num_hijos: {df['num_hijos'].null_count()}")
 
-# Antes de decidir cómo tratar los nulos, se verifica si se explican por `estado_civil_desc` (sin pareja) o `pareja_trabaja_desc` (pareja no trabaja) — filtro oficial P4_3 → P4_5_AB del dataset
-
+# ingreso_pareja: se verifica si los nulos se explican por estado_civil_desc
+# o pareja_trabaja_desc antes de decidir si se imputan.
 total_nulos_ingreso = df.filter(pl.col("ingreso_pareja").is_null()).height
 print(f"Total de nulos en ingreso_pareja: {total_nulos_ingreso}")
 
@@ -199,7 +181,6 @@ cruce_nulos = (
 )
 print(cruce_nulos)
 
-# ¿Cuántos nulos quedan en mujeres CON pareja y cuya pareja SÍ trabaja?
 nulos_sin_explicacion = df.filter(
     pl.col("ingreso_pareja").is_null()
     & (pl.col("estado_civil_desc") != "Soltera")
@@ -215,7 +196,7 @@ nulos_por_estrato = (
 )
 print(nulos_por_estrato)
 
-
+# Solo se imputa el remanente sin explicación estructural.
 mediana_ingreso = df.filter(
     (pl.col("estado_civil_desc") != "Soltera")
     & (pl.col("pareja_trabaja_desc") == "Sí")
@@ -232,7 +213,7 @@ df = df.with_columns(
         & (pl.col("pareja_trabaja_desc") == "Sí")
     )
     .then(mediana_ingreso)
-    .otherwise(pl.col("ingreso_pareja"))  # todos los demás nulos se quedan como nulo
+    .otherwise(pl.col("ingreso_pareja"))
     .alias("ingreso_pareja")
 )
 
@@ -240,9 +221,8 @@ for col in ["edad_primer_union", "num_hijos", "ingreso_pareja"]:
     n_nulos = df[col].null_count()
     print(f"{col}: {n_nulos} nulos restantes")
 
-# 8. Outliers: ¿se manejan o no?
 
-
+# Outliers: se detectan con IQR pero no se eliminan, son parte del fenómeno de estudio.
 def detectar_outliers_iqr(df, columna):
     q1 = df[columna].quantile(0.25)
     q3 = df[columna].quantile(0.75)
@@ -270,8 +250,57 @@ for ax, col in zip(axes, ["edad_primer_union", "num_hijos", "ingreso_pareja"]):
 plt.tight_layout()
 plt.show()
 
-# Guardar el dataset limpio
+# Conversión de variables Sí/No a binario (Sí=1, No=0).
+# Primero se verifica que las columnas _id (1/2) coincidan con las _desc.
+pares_id_desc = [
+    ("pareja_trabaja_id", "pareja_trabaja_desc"),
+    ("dinero_propio_id", "dinero_propio_desc"),
+    ("apoyo_gobierno_id", "apoyo_gobierno_desc"),
+    ("tiene_ahorros_id", "tiene_ahorros_desc"),
+    ("propietaria_vivienda_id", "propietaria_vivienda_desc"),
+]
 
+for id_col, desc_col in pares_id_desc:
+    cruce = df.group_by([id_col, desc_col]).len().sort(id_col)
+    print(f"--- {id_col} vs {desc_col} ---")
+    print(cruce)
+
+columnas_si_no_desc = [
+    "pareja_trabaja_desc",
+    "dinero_propio_desc",
+    "apoyo_gobierno_desc",
+    "tiene_ahorros_desc",
+    "propietaria_vivienda_desc",
+]
+
+df = df.with_columns(
+    [
+        pl.col(col).replace({"Sí": 1, "No": 0}).cast(pl.Int8).alias(col)
+        for col in columnas_si_no_desc
+    ]
+)
+
+# Confirmado arriba: 1 = Sí, 2 = No en las columnas _id. Se recodifican a 1/0.
+columnas_si_no_id = [
+    "pareja_trabaja_id",
+    "dinero_propio_id",
+    "apoyo_gobierno_id",
+    "tiene_ahorros_id",
+    "propietaria_vivienda_id",
+]
+
+df = df.with_columns(
+    [
+        pl.col(col).replace({1: 1, 2: 0}).cast(pl.Int8).alias(col)
+        for col in columnas_si_no_id
+    ]
+)
+
+for col in columnas_si_no_desc + columnas_si_no_id:
+    print(f"{col}: {df.schema[col]}")
+    print(df[col].value_counts().sort(col))
+
+# Guardar el dataset limpio.
 from config.rutas import RUTA_DATA_PROCESSED
 
 ruta_salida = RUTA_DATA_PROCESSED / "endireh_2021_clean.csv"
