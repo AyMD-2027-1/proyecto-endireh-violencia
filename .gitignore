@@ -2,3 +2,5 @@ data/data-raw/*.csv
 
 __pycache__/
 .venv/
+.claude/
+.DS_Store
