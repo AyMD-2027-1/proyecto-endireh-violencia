@@ -4,7 +4,9 @@ Curso de Almacenes y Minería de Datos — Facultad de Ciencias, UNAM.
 
 ## Objetivo del Proyecto
 
-<!-- ToDO -->
+El objetivo de esta práctica es aprender a estructurar correctamente un proyecto de minería de datos siguiendo una arquitectura de carpetas estándar en la industria, seleccionar y justificar el uso de un framework de análisis de datos (pandas, polars o PySpark), aplicar un preprocesamiento riguroso (normalización, eliminación de duplicados, conversión de tipos de datos e imputación) sobre un conjunto de datos real del gobierno mexicano relacionado con la violencia contra las mujeres, y calcular e interpretar medidas de localización y variabilidad como parte del análisis exploratorio, previo a cualquier modelado.
+
+Para este proyecto se seleccionó **polars** como framework de análisis de datos.
 
 ## Fuente de Datos
 
@@ -30,7 +32,7 @@ proyecto-endireh-violencia/
 ├── src/
 │   ├── cleaning/           # Scripts de limpieza y preprocesamiento
 │   ├── eda/                # Scripts de exploración
-│   ├── visualization/      # Scripts de graficas y EDA
+│   ├── visualization/      # Scripts de graficas
 │   └── models/             # Scripts de entrenamiento y evaluacion de modelos
 │
 ├── notebooks/              # Notebooks exploratorios (no productivos)
@@ -42,8 +44,8 @@ proyecto-endireh-violencia/
 
 <!-- ToDO: Actualizar conforme se agreguen -->
 
-- Polars
-- Pyarrow
+- polars
+- pyarrow
 - ipykernel
 - matplotlib
 - seaborn
@@ -52,8 +54,10 @@ proyecto-endireh-violencia/
 ## Cómo instalar el entorno
 
 ```sh
+# Clonar el repositorio
 git clone https://github.com/jzarcoo/proyecto-endireh-violencia.git
 
+# Entrar al directorio del proyecto
 cd proyecto-endireh-violencia
 
 # Crear entorno virtual
@@ -66,7 +70,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-<!-- ToDO: Agregar donde descargar datos crudos -->
+Colocar el archivo de microdatos descargado, sin modificar, en `data/data-raw/endireh_2021.csv`.
 
 ## Cómo ejecutar un archivo
 
@@ -76,9 +80,21 @@ python -m src.eda.load_raw_data
 
 ## Cómo ejecutar el pipeline
 
+El pipeline se ejecuta en orden desde la raíz del proyecto:
 
-<!-- ToDO -->
+```sh
+# 1. Limpieza y preprocesamiento: genera data/data-processed/endireh_2021_clean.csv
+python -m src.cleaning.limpieza_de_datos
 
+# 2. Medidas de localización sobre el dataset ya limpio
+python -m src.eda.medidas_localizacion
+
+# 3. Medidas de variabilidad sobre el dataset ya limpio
+python -m src.eda.medidas_variabilidad
+
+# 4. Distribución de las variables cuantitativas
+python -m src.visualization.distribuciones
+```
 
 ## Equipo
 
