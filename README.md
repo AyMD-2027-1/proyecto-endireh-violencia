@@ -89,7 +89,7 @@ python -m src.cleaning.limpieza_de_datos
 # 2. Medidas de localización sobre el dataset ya limpio
 python -m src.eda.medidas_localizacion
 
-# 3. Medidas de variabilidad sobre el dataset ya limpio
+# 3. Medidas de variabilidad sobre el dataset
 python -m src.eda.medidas_variabilidad
 
 # 4. Distribución de las variables cuantitativas
