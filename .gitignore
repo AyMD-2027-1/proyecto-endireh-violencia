@@ -1,4 +1,5 @@
 data/data-raw/*.csv
+*.csv
 
 __pycache__/
 .venv/
