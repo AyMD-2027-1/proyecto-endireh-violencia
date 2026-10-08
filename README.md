@@ -1,4 +1,4 @@
-# Práctica 3 - Técnicas y Frameworks de Minería de Datos. Arquitectura de Proyectos de Datos, Preprocesamiento y Análisis Exploratorio sobre Violencia contra las Mujeres
+# Práctica 4
 
 Curso de Almacenes y Minería de Datos — Facultad de Ciencias, UNAM.
 
