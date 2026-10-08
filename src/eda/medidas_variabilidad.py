@@ -27,7 +27,7 @@ def calcular_medidas_variabilidad(df: pl.DataFrame, columnas: list[str], grupo: 
     if grupo is None:
         grupos = [(None, df)]
     else:
-        grupos = [(g, sub) for g, sub in df.group_by(grupo)]
+        grupos = [(g[0], sub) for g, sub in df.group_by(grupo)]
 
     for valor_grupo, sub_df in grupos:
         for col in columnas:

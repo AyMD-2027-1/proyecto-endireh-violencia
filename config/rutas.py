@@ -14,3 +14,6 @@ RUTA_DATA_MODEL = RUTA_DATA / "data-model"
 # Archivos de datos
 ARCHIVO_RAW = RUTA_DATA_RAW / "endireh_2021.csv"
 ARCHIVO_PROCESSED = RUTA_DATA_PROCESSED / "endireh_2021_clean.csv"
+
+# Carpeta donde los notebooks guardan sus figuras
+RUTA_FIGURAS = RUTA_PROYECTO / "figuras"
