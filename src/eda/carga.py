@@ -1,5 +1,5 @@
 """
-Carga de los datos de ENDIREH 2021 (Práctica 4).
+Carga del dataset limpio de ENDIREH 2021 (Práctica 4).
 
 Los archivos en data/ no se modifican: la corrección de codificación de los
 nombres de entidad y municipio se aplica solo en memoria.
@@ -7,7 +7,7 @@ nombres de entidad y municipio se aplica solo en memoria.
 
 import polars as pl
 
-from config.rutas import ARCHIVO_PROCESSED, ARCHIVO_RAW
+from config.rutas import ARCHIVO_PROCESSED
 
 PESO = "factor_expansion"
 COLUMNAS_TEXTO = ["nom_entidad", "nom_municipio"]
@@ -27,11 +27,6 @@ def _corregir_nombres(df: pl.DataFrame) -> pl.DataFrame:
         for c in COLUMNAS_TEXTO
         if c in df.columns
     )
-
-
-def cargar_datos_crudos() -> pl.DataFrame:
-    """Archivo descargado en data/data-raw/, tal como se obtuvo."""
-    return pl.read_csv(ARCHIVO_RAW)
 
 
 def cargar_datos_limpios() -> pl.DataFrame:
